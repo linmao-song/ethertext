@@ -59,7 +59,7 @@ body {margin:0;}
 <body>
 <div class="navbar">
   <a href="./">Home[Beta testing]</a>
-  <a href="https://github.com/">Source Code (soon to upload)</a>
+  <a href="https://github.com/songlinm/ethertext">Source Code</a>
   <form action="start" method="GET">
     <input type="text" name="blocknum" id="blknuminput">
     <input type="submit" value="strings in block">
