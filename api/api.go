@@ -16,12 +16,12 @@ type Server struct {
 	server      *http.Server
 }
 
-func NewServer(chain *core.BlockChain, listenAddr string) *Server {
-	b := blockreader.NewBlockReader(chain, 102400000)
+func NewServer(chain *core.BlockChain, listenAddr string, cacheSize int) *Server {
+	b := blockreader.NewBlockReader(chain, cacheSize)
 	router := http.NewServeMux()
-	router.Handle("/", index())
-	router.Handle("/text", ethertext(b))
-	router.Handle("/start", start())
+	router.Handle("/", logRequest(index()))
+	router.Handle("/text", logRequest(ethertext(b)))
+	router.Handle("/start", logRequest(start()))
 
 	server := &http.Server{
 		Addr:         listenAddr,
@@ -110,5 +110,16 @@ func ethertext(b *blockreader.Blockreader) http.Handler {
 		w.Write(json)
 		logrus.Infof("finished processing ")
 		return
+	})
+}
+
+func logRequest(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		logrus.WithFields(logrus.Fields{
+			"from":   r.RemoteAddr,
+			"method": r.Method,
+			"url":    r.URL,
+		}).Info("Processing request")
+		handler.ServeHTTP(w, r)
 	})
 }

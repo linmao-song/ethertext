@@ -22,6 +22,8 @@ const clientIdentifier = "Ethertext"
 var (
 	dataDir    string
 	listenAddr string
+	logFile    string
+	cacheSize  int
 )
 
 type gethConfig struct {
@@ -32,6 +34,8 @@ type gethConfig struct {
 func init() {
 	flag.StringVar(&dataDir, "datadir", "", "data storage directory")
 	flag.StringVar(&listenAddr, "listenaddr", "", "http server address <host:port>")
+	flag.StringVar(&logFile, "logfile", "", "file to write logs to")
+	flag.IntVar(&cacheSize, "cachesize", 1024*1024*10, "number of entries in cache")
 }
 
 func defaultNodeConfig() node.Config {
@@ -108,7 +112,7 @@ func etherText(ctx context.Context) {
 	if len(listenAddr) == 0 {
 		listenAddr = "localhost:80"
 	}
-	s := api.NewServer(chain, listenAddr)
+	s := api.NewServer(chain, listenAddr, cacheSize)
 	go s.Start(ctx)
 
 	for {
@@ -129,10 +133,17 @@ func main() {
 	flag.Parse()
 
 	formatter := &logrus.TextFormatter{
-	    FullTimestamp: true,
+		FullTimestamp: true,
 	}
 	logrus.SetFormatter(formatter)
 
+	if len(logFile) > 0 {
+		if log, err := os.OpenFile(logFile, os.O_WRONLY|os.O_CREATE, 0744); err != nil {
+			logrus.WithError(err).Panic("Error creating log file")
+		} else {
+			logrus.SetOutput(log)
+		}
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	c := make(chan os.Signal, 1)
