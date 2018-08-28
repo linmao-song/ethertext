@@ -128,6 +128,12 @@ func etherText(ctx context.Context) {
 func main() {
 	flag.Parse()
 
+	formatter := &logrus.TextFormatter{
+	    FullTimestamp: true,
+	}
+	logrus.SetFormatter(formatter)
+
+
 	ctx, cancel := context.WithCancel(context.Background())
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
