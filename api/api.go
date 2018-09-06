@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"net/http"
+	"net/http/httputil"
 	"strconv"
 	"time"
 
@@ -115,10 +116,15 @@ func ethertext(b *blockreader.Blockreader) http.Handler {
 
 func logRequest(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		raw, err := httputil.DumpRequest(r, true)
+		if err != nil {
+			logrus.WithError(err).Warn("Failed to dump request")
+		}
 		logrus.WithFields(logrus.Fields{
 			"from":   r.RemoteAddr,
 			"method": r.Method,
 			"url":    r.URL,
+			"req":    string(raw),
 		}).Info("Processing request")
 		handler.ServeHTTP(w, r)
 	})
