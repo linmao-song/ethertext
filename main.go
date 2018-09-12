@@ -138,7 +138,7 @@ func main() {
 	logrus.SetFormatter(formatter)
 
 	if len(logFile) > 0 {
-		if log, err := os.OpenFile(logFile, os.O_WRONLY|os.O_CREATE, 0744); err != nil {
+		if log, err := os.OpenFile(logFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744); err != nil {
 			logrus.WithError(err).Panic("Error creating log file")
 		} else {
 			logrus.SetOutput(log)
