@@ -95,7 +95,7 @@ function get(startnum){
           var cell1 = row.insertCell(0)
           cell1.innerHTML = "<a href='https://etherscan.io/block/" + recs[i].BlockNum + "'>Block " + recs[i].BlockNum + "</a>"
           var cell2 = row.insertCell(1)
-          cell2.innerHTML = "<a href='https://etherscan.io/tx/" + recs[i].Text[j].Txn + "'>txn " + recs[i].Text[j].Txn.slice(0, 4) + "..." + recs[i].Text[j].Txn.slice(-4) + "</a>"
+          cell2.innerHTML = "<a name='" + recs[i].Text[j].Txt + "'>" + "<a href='https://etherscan.io/tx/" + recs[i].Text[j].Txn + "'>txn " + recs[i].Text[j].Txn.slice(0, 4) + "..." + recs[i].Text[j].Txn.slice(-4) + "</a>"
           var cell3 = row.insertCell(2)
           cell3.innerHTML = recs[i].Text[j].Text
           lastBlockNum = recs[i].BlockNum
